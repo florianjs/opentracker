@@ -88,7 +88,7 @@ services:
       redis:
         condition: service_healthy
       pgbouncer:
-        condition: service_started
+        condition: service_healthy
     deploy:
       resources:
         limits:
