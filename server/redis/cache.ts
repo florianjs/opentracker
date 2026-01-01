@@ -141,6 +141,7 @@ export async function incrementCompleted(infoHash: string): Promise<number> {
 
 /**
  * Get cached stats for a torrent
+ * Falls back to tracker's internal swarm data if Redis cache is empty
  */
 export async function getStats(
   infoHash: string
@@ -149,6 +150,23 @@ export async function getStats(
     getPeerCount(infoHash),
     redis.hget(STATS_KEY(infoHash), 'completed'),
   ]);
+
+  // If no peers in Redis, try tracker's internal swarm data
+  // This is more reliable as it reflects real-time state
+  if (peerCount.seeders === 0 && peerCount.leechers === 0) {
+    try {
+      const { getSwarmStats } = await import('../tracker');
+      const swarmStats = getSwarmStats(infoHash);
+      if (swarmStats.seeders > 0 || swarmStats.leechers > 0) {
+        return {
+          ...swarmStats,
+          completed: parseInt(completedRaw || '0', 10),
+        };
+      }
+    } catch {
+      // Tracker not available, continue with Redis data
+    }
+  }
 
   return {
     ...peerCount,

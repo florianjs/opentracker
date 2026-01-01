@@ -98,15 +98,17 @@ export function initTracker(config: TrackerConfig = {}): TrackerServer {
   // Event Handlers
   // ============================================================================
 
-  // DEBUG: Log ALL events
-  const originalEmit = server.emit.bind(server);
-  server.emit = function (eventName: string, ...args: unknown[]) {
-    console.log(
-      `[Tracker] EVENT: ${eventName}`,
-      args.map((a) => (typeof a === 'object' ? '[object]' : a)).join(', ')
-    );
-    return originalEmit(eventName, ...args);
-  };
+  // DEBUG: Log ALL events (dev only)
+  if (process.env.NODE_ENV !== 'production') {
+    const originalEmit = server.emit.bind(server);
+    server.emit = function (eventName: string, ...args: unknown[]) {
+      console.log(
+        `[Tracker] EVENT: ${eventName}`,
+        args.map((a) => (typeof a === 'object' ? '[object]' : a)).join(', ')
+      );
+      return originalEmit(eventName, ...args);
+    };
+  }
 
   server.on('start', (addr: string, params: any) => {
     const infoHash = params.infoHash || params.info_hash;
@@ -225,6 +227,34 @@ export function initTracker(config: TrackerConfig = {}): TrackerServer {
  */
 export function getTracker(): TrackerServer | null {
   return server;
+}
+
+/**
+ * Get swarm stats from the tracker's internal data
+ * This is more reliable than Redis cache as it reflects real-time state
+ */
+export function getSwarmStats(
+  infoHash: string
+): { seeders: number; leechers: number } {
+  if (!server) {
+    return { seeders: 0, leechers: 0 };
+  }
+
+  try {
+    // bittorrent-tracker stores swarms by infoHash
+    const swarm = server.getSwarm(infoHash);
+    if (!swarm) {
+      return { seeders: 0, leechers: 0 };
+    }
+
+    return {
+      seeders: swarm.complete || 0,
+      leechers: swarm.incomplete || 0,
+    };
+  } catch (err) {
+    console.error('[Tracker] Error getting swarm stats:', err);
+    return { seeders: 0, leechers: 0 };
+  }
 }
 
 /**

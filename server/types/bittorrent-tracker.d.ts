@@ -1,4 +1,5 @@
 declare module 'bittorrent-tracker' {
+  import { EventEmitter } from 'events';
   import { Server as HttpServer } from 'http';
   import { Socket as DgramSocket } from 'dgram';
   import { Server as WsServer } from 'ws';
@@ -31,7 +32,7 @@ declare module 'bittorrent-tracker' {
     getSwarm(infoHash: string | Buffer): any;
   }
 
-  export class Server implements TrackerServer {
+  export class Server extends EventEmitter implements TrackerServer {
     constructor(options?: ServerOptions);
     http?: HttpServer;
     udp?: DgramSocket;

@@ -105,7 +105,7 @@
             </div>
           </div>
           <div class="col-span-2 text-center font-mono text-sm">
-            {{ topic.posts.length - 1 }}
+            {{ topic.replyCount }}
           </div>
           <div class="col-span-3 text-right">
             <div v-if="topic.posts?.[0]" class="text-xs">

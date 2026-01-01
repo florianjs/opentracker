@@ -1,6 +1,6 @@
 import { db } from '~~/server/db';
-import { forumCategories, forumTopics } from '~~/server/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { forumCategories, forumTopics, forumPosts } from '~~/server/db/schema';
+import { eq, desc, sql, count } from 'drizzle-orm';
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id');
@@ -40,5 +40,27 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return category;
+  // Count replies for each topic (posts - 1, since first post is the topic itself)
+  const topicIds = category.topics.map((t) => t.id);
+  
+  const postCounts = topicIds.length > 0 
+    ? await db
+        .select({
+          topicId: forumPosts.topicId,
+          count: count(),
+        })
+        .from(forumPosts)
+        .where(sql`${forumPosts.topicId} IN ${topicIds}`)
+        .groupBy(forumPosts.topicId)
+    : [];
+
+  const countMap = new Map(postCounts.map((p) => [p.topicId, p.count]));
+
+  return {
+    ...category,
+    topics: category.topics.map((topic) => ({
+      ...topic,
+      replyCount: Math.max(0, (countMap.get(topic.id) || 0) - 1),
+    })),
+  };
 });
