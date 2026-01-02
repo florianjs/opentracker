@@ -23,17 +23,17 @@ Built with Nuxt 4 • PostgreSQL • Redis
 
 | **Privacy & Authentication**           | **Performance**                      |
 | -------------------------------------- | ------------------------------------ |
-| 🔐 Zero-Knowledge Authentication       | ⚡ Redis-powered sub-ms peer lookups |
-| 🛡️ Proof of Work anti-abuse            | 🗄️ PostgreSQL with full-text search  |
-| 🔒 Private torrents (DHT/PEX disabled) | 📡 HTTP & WebSocket announce support |
-| 📊 Ratio tracking & enforcement        | 🔄 Optimized for high concurrency    |
+| Zero-Knowledge Authentication          | Redis-powered sub-ms peer lookups    |
+| Proof of Work anti-abuse               | PostgreSQL with full-text search     |
+| Private torrents (DHT/PEX disabled)    | HTTP & WebSocket announce support    |
+| Ratio tracking & enforcement           | Optimized for high concurrency       |
 
 | **Security**                 | **Emergency**                                   |
 | ---------------------------- | ----------------------------------------------- |
-| 🚫 Distributed rate limiting | 🚨 **Panic Mode** — Instant database encryption |
-| 🔥 Auto IP blacklisting      | 🔑 AES-256-GCM protected data                   |
-| 🛡️ SQL/XSS attack detection  | ♻️ Full restoration with master password        |
-| 🔐 SHA-256 hashed IPs        | 💀 Unrecoverable without password               |
+| Distributed rate limiting    | **Panic Mode** — Instant database encryption    |
+| Auto IP blacklisting         | AES-256-GCM protected data                      |
+| SQL/XSS attack detection     | Full restoration with master password           |
+| SHA-256 hashed IPs           | Unrecoverable without password                  |
 
 ---
 
@@ -60,7 +60,7 @@ OpenTracker uses a **Zero-Knowledge** authentication system: the server **never 
 │         │ 4. Compute verifier = SHA256(key)            │           │
 │         │                                              │           │
 │         │ 5. Send {username, salt, verifier} ─────────►│           │
-│         │    ⚠️ Password NEVER leaves client           │           │
+│         │    Password NEVER leaves client           │           │
 │         │                                              │           │
 │         │                              6. Store salt + │           │
 │         │                                 verifier     │           │
@@ -86,7 +86,7 @@ OpenTracker uses a **Zero-Knowledge** authentication system: the server **never 
 │         │ 5. Generate proof = SHA256(verifier+challenge)           │
 │         │                                              │           │
 │         │ 6. Send {username, proof, challenge} ───────►│           │
-│         │    ⚠️ Password NEVER leaves client           │           │
+│         │    Password NEVER leaves client           │           │
 │         │                                              │           │
 │         │                       7. Compute expected =  │           │
 │         │                          SHA256(storedVerifier+challenge)│
@@ -98,10 +98,10 @@ OpenTracker uses a **Zero-Knowledge** authentication system: the server **never 
 
 **Key Properties:**
 
-- 🔒 **Password never transmitted** — Only cryptographic proofs
-- 🛡️ **PBKDF2 with 100k iterations** — Brute-force resistant
-- 🎲 **Unique challenge per login** — Prevents replay attacks
-- ⚡ **Proof of Work** — Stops automated registration attacks
+- **Password never transmitted** — Only cryptographic proofs
+- **PBKDF2 with 100k iterations** — Brute-force resistant
+- **Unique challenge per login** — Prevents replay attacks
+- **Proof of Work** — Stops automated registration attacks
 
 ---
 
@@ -117,7 +117,7 @@ The **Panic Button** allows administrators to **instantly encrypt all sensitive 
 │  • Posts & comments visible                                       │
 └───────────────────────────────────────────────────────────────────┘
                               │
-                    🔴 PANIC ACTIVATED
+                    PANIC ACTIVATED
                               │
                               ▼
 ┌───────────────────────────────────────────────────────────────────┐
@@ -129,7 +129,7 @@ The **Panic Button** allows administrators to **instantly encrypt all sensitive 
 │  • Forum posts    → Encrypted                                     │
 └───────────────────────────────────────────────────────────────────┘
                               │
-                    🔑 RESTORE (with password)
+                    RESTORE (with password)
                               │
                               ▼
 ┌───────────────────────────────────────────────────────────────────┐
@@ -152,7 +152,7 @@ The **Panic Button** allows administrators to **instantly encrypt all sensitive 
 | Encryption | AES-256-GCM |
 | IV | 16 bytes random (per session) |
 
-> ⚠️ **WARNING**: Without the Panic Password, encrypted data is **permanently lost**. There is no recovery mechanism.
+> **WARNING**: Without the Panic Password, encrypted data is **permanently lost**. There is no recovery mechanism.
 
 ---
 
@@ -164,7 +164,7 @@ The **Panic Button** allows administrators to **instantly encrypt all sensitive 
 
 #### DNS Configuration (Required before installation)
 
-> ⚠️ **IMPORTANT**: Before running the installer, you must configure your DNS records to point to your VPS IP address.
+> **IMPORTANT**: Before running the installer, you must configure your DNS records to point to your VPS IP address.
 
 Create the following **A records** pointing to your server's IP:
 
@@ -189,15 +189,15 @@ sudo ./install.sh
 
 The installer will:
 
-- ✅ Install Docker and dependencies
-- ✅ Generate cryptographic secrets
-- ✅ Configure firewall rules
-- ✅ Set up TLS/SSL with Let's Encrypt
-- ✅ Create systemd service for auto-restart
-- ✅ Configure PostgreSQL, Redis, Caddy, and monitoring
-- ✅ Set up Prometheus + Grafana monitoring
+- Install Docker and dependencies
+- Generate cryptographic secrets
+- Configure firewall rules
+- Set up TLS/SSL with Let's Encrypt
+- Create systemd service for auto-restart
+- Configure PostgreSQL, Redis, Caddy, and monitoring
+- Set up Prometheus + Grafana monitoring
 
-> **📊 Monitoring**: After installation, Grafana is accessible at `https://monitoring.your-domain.com/grafana`
+> **Monitoring**: After installation, Grafana is accessible at `https://monitoring.your-domain.com/grafana`
 >
 > Default credentials: `admin` / `admin` (you'll be prompted to change on first login)
 > Having issues with the password ? Just launch : 
@@ -235,7 +235,7 @@ docker compose logs -f app
 
 ## 🔒 Security
 
-> ⚠️ **For production, always use the install script** to ensure proper secret generation and security configuration.
+> **For production, always use the install script** to ensure proper secret generation and security configuration.
 
 ### Key Security Features
 
@@ -260,11 +260,11 @@ docker compose logs -f app
 
 **Use `install.sh`** — it handles security automatically:
 
-- ✅ Generates cryptographic secrets (32-64 chars)
-- ✅ Configures TLS for all connections
-- ✅ Sets up Caddy reverse proxy with HTTPS
-- ✅ Configures firewall (ports 80, 443 only)
-- ✅ Network isolation (databases not exposed)
+- Generates cryptographic secrets (32-64 chars)
+- Configures TLS for all connections
+- Sets up Caddy reverse proxy with HTTPS
+- Configures firewall (ports 80, 443 only)
+- Network isolation (databases not exposed)
 
 **Manual steps after install:**
 
@@ -379,6 +379,6 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 **Built with ❤️ for the P2P community**
 
-[⬆ Back to top](#-opentracker)
+[Back to top](#-opentracker)
 
 </div>

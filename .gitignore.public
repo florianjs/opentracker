@@ -7,7 +7,7 @@
 dist
 
 # Agents
-.github
+.github/*.md
 .agent
 
 # Node dependencies
