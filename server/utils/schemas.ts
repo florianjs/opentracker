@@ -132,6 +132,21 @@ export const adminSettingsSchema = z.object({
   starterUpload: z.coerce.number().int().min(0).optional(),
   siteName: z.string().min(1).max(50).optional(),
   siteLogo: z.string().min(1).max(100).optional(),
+  siteLogoImage: z.string().max(500).optional().nullable(),
+  siteSubtitle: z.string().max(100).optional().nullable(),
+  announcementEnabled: z.boolean().optional(),
+  announcementMessage: z.string().max(500).optional(),
+  announcementType: z.enum(['info', 'warning', 'error']).optional(),
+  // Homepage content
+  heroTitle: z.string().max(50).optional(),
+  heroSubtitle: z.string().max(500).optional(),
+  statusBadgeText: z.string().max(100).optional(),
+  feature1Title: z.string().max(100).optional(),
+  feature1Desc: z.string().max(500).optional(),
+  feature2Title: z.string().max(100).optional(),
+  feature2Desc: z.string().max(500).optional(),
+  feature3Title: z.string().max(100).optional(),
+  feature3Desc: z.string().max(500).optional(),
 });
 
 // ============================================================================

@@ -5,6 +5,9 @@ import { getMinRatio } from '../utils/settings';
 
 let server: TrackerServer | null = null;
 
+// Debug mode for verbose tracker logging (set TRACKER_DEBUG=true in .env)
+const TRACKER_DEBUG = process.env.TRACKER_DEBUG === 'true';
+
 export interface TrackerConfig {
   httpPort?: number;
   udpPort?: number;
@@ -111,14 +114,18 @@ export function initTracker(config: TrackerConfig = {}): TrackerServer {
   }
 
   server.on('start', (addr: string, params: any) => {
-    // DEBUG: Log raw params to diagnose ratio tracking issue
-    console.log('[Tracker] RAW PARAMS (start):', JSON.stringify({
-      uploaded: params.uploaded,
-      downloaded: params.downloaded,
-      left: params.left,
-      passkey: params.passkey ? params.passkey.slice(0, 8) + '...' : 'MISSING',
-      allKeys: Object.keys(params),
-    }));
+    console.log('[Tracker] ========== START EVENT RECEIVED ==========');
+    console.log('[Tracker] addr:', addr);
+    console.log('[Tracker] params keys:', Object.keys(params));
+    if (TRACKER_DEBUG) {
+      console.log('[Tracker] RAW PARAMS (start):', JSON.stringify({
+        uploaded: params.uploaded,
+        downloaded: params.downloaded,
+        left: params.left,
+        passkey: params.passkey ? params.passkey.slice(0, 8) + '...' : 'MISSING',
+        allKeys: Object.keys(params),
+      }));
+    }
     const infoHash = params.infoHash || params.info_hash;
     const peerId = params.peerId || params.peer_id;
     const { uploaded, downloaded, left, passkey } = params;
@@ -182,13 +189,16 @@ export function initTracker(config: TrackerConfig = {}): TrackerServer {
   });
 
   server.on('update', (addr: string, params: any) => {
-    // DEBUG: Log raw params to diagnose ratio tracking issue
-    console.log('[Tracker] RAW PARAMS (update):', JSON.stringify({
-      uploaded: params.uploaded,
-      downloaded: params.downloaded,
-      left: params.left,
-      passkey: params.passkey ? params.passkey.slice(0, 8) + '...' : 'MISSING',
-    }));
+    console.log('[Tracker] ========== UPDATE EVENT RECEIVED ==========');
+    console.log('[Tracker] addr:', addr);
+    if (TRACKER_DEBUG) {
+      console.log('[Tracker] RAW PARAMS (update):', JSON.stringify({
+        uploaded: params.uploaded,
+        downloaded: params.downloaded,
+        left: params.left,
+        passkey: params.passkey ? params.passkey.slice(0, 8) + '...' : 'MISSING',
+      }));
+    }
     const infoHash = params.infoHash || params.info_hash;
     const peerId = params.peerId || params.peer_id;
     const { uploaded, downloaded, left, passkey } = params;

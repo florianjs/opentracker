@@ -21,6 +21,7 @@ services:
       - DB_NAME=${DB_NAME:-opentracker}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - TRACKER_DEBUG=${TRACKER_DEBUG:-false}
     volumes:
       - .:/app
       - /app/node_modules

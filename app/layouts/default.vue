@@ -11,16 +11,22 @@
       >
         <NuxtLink to="/" class="flex items-center gap-2.5 group">
           <div
-            class="w-7 h-7 bg-white rounded-sm flex items-center justify-center transition-transform group-hover:rotate-12"
+            class="w-7 h-7 bg-white rounded-sm flex items-center justify-center transition-transform group-hover:rotate-12 overflow-hidden"
           >
-            <Icon :name="branding?.siteLogo || 'ph:broadcast-bold'" class="text-black text-lg" />
+            <img
+              v-if="branding?.siteLogoImage"
+              :src="branding.siteLogoImage"
+              alt="Logo"
+              class="w-full h-full object-contain"
+            />
+            <Icon v-else :name="branding?.siteLogo || 'ph:broadcast-bold'" class="text-black text-lg" />
           </div>
           <div class="flex flex-col leading-none">
             <span class="text-sm font-bold tracking-tighter uppercase"
               >{{ branding?.siteName || 'OpenTracker' }}</span
             >
             <span class="text-[10px] text-text-muted font-mono"
-              >v{{ useRuntimeConfig().public.appVersion }}</span
+              >{{ branding?.siteSubtitle || `v${useRuntimeConfig().public.appVersion}` }}</span
             >
           </div>
         </NuxtLink>
@@ -203,6 +209,42 @@
       </div>
     </header>
 
+    <!-- Announcement Banner -->
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div
+        v-if="announcement?.enabled && announcement?.message && !announcementDismissed"
+        :class="[
+          'border-b',
+          announcementStyles[announcement.type || 'info'].bg,
+          announcementStyles[announcement.type || 'info'].border,
+        ]"
+      >
+        <div class="max-w-[1400px] mx-auto px-4 py-2.5 flex items-center gap-3">
+          <Icon
+            :name="announcementStyles[announcement.type || 'info'].icon"
+            :class="['text-lg flex-shrink-0', announcementStyles[announcement.type || 'info'].text]"
+          />
+          <p :class="['text-sm flex-1', announcementStyles[announcement.type || 'info'].text]">
+            {{ announcement.message }}
+          </p>
+          <button
+            @click="dismissAnnouncement"
+            class="p-1 rounded hover:bg-white/10 transition-colors flex-shrink-0"
+            title="Dismiss"
+          >
+            <Icon name="ph:x" :class="['text-sm', announcementStyles[announcement.type || 'info'].text]" />
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Main Content -->
     <main class="flex-grow max-w-[1400px] w-full mx-auto px-4 py-6">
       <slot />
@@ -244,7 +286,55 @@ const showUserMenu = ref(false);
 const userMenuRef = ref<HTMLElement | null>(null);
 
 // Fetch site branding
-const { data: branding } = await useFetch<{ siteName: string; siteLogo: string }>('/api/branding');
+const { data: branding } = await useFetch<{
+  siteName: string;
+  siteLogo: string;
+  siteLogoImage: string | null;
+  siteSubtitle: string | null;
+}>('/api/branding');
+
+// Fetch announcement
+const { data: announcement } = await useFetch<{
+  enabled: boolean;
+  message?: string;
+  type?: 'info' | 'warning' | 'error';
+}>('/api/announcement');
+
+const announcementDismissed = ref(false);
+
+const announcementStyles = {
+  info: {
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/30',
+    text: 'text-blue-400',
+    icon: 'ph:info',
+  },
+  warning: {
+    bg: 'bg-yellow-500/10',
+    border: 'border-yellow-500/30',
+    text: 'text-yellow-400',
+    icon: 'ph:warning',
+  },
+  error: {
+    bg: 'bg-red-500/10',
+    border: 'border-red-500/30',
+    text: 'text-red-400',
+    icon: 'ph:warning-circle',
+  },
+};
+
+function dismissAnnouncement() {
+  announcementDismissed.value = true;
+  if (import.meta.client) {
+    sessionStorage.setItem('announcement_dismissed', 'true');
+  }
+}
+
+onMounted(() => {
+  if (import.meta.client) {
+    announcementDismissed.value = sessionStorage.getItem('announcement_dismissed') === 'true';
+  }
+});
 
 // Refresh user stats from database
 async function refreshStats() {

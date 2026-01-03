@@ -15,17 +15,16 @@
         </span>
         <span
           class="text-[10px] font-bold uppercase tracking-widest text-text-muted"
-          >Tracker Online & Operational</span
+          >{{ content?.statusBadgeText ?? 'Tracker Online & Operational' }}</span
         >
       </div>
       <h1
         class="text-4xl md:text-6xl font-black text-text-primary tracking-tighter uppercase mb-4"
       >
-        Open<span class="text-text-muted">Tracker</span>
+        {{ heroTitleParts.first }}<span class="text-text-muted">{{ heroTitleParts.second }}</span>
       </h1>
       <p class="text-sm text-text-muted font-mono max-w-xl mx-auto mb-10">
-        High-performance, minimalist P2P tracking engine. Search through our
-        indexed database of verified torrents.
+        {{ content?.heroSubtitle ?? 'High-performance, minimalist P2P tracking engine. Search through our indexed database of verified torrents.' }}
       </p>
 
       <!-- Search Bar -->
@@ -86,37 +85,14 @@
     <div
       class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 border-t border-border pt-12"
     >
-      <div>
+      <div v-for="(feature, index) in features" :key="index">
         <h4
           class="text-xs font-bold uppercase tracking-widest text-text-primary mb-3"
         >
-          High Performance
+          {{ feature.title }}
         </h4>
         <p class="text-xs text-text-muted leading-relaxed font-mono">
-          Built with Node.js and Redis for sub-millisecond response times and
-          high concurrency support.
-        </p>
-      </div>
-      <div>
-        <h4
-          class="text-xs font-bold uppercase tracking-widest text-text-primary mb-3"
-        >
-          Multi-Protocol
-        </h4>
-        <p class="text-xs text-text-muted leading-relaxed font-mono">
-          Supports HTTP, UDP, and WebSocket protocols for maximum compatibility
-          with all BitTorrent clients.
-        </p>
-      </div>
-      <div>
-        <h4
-          class="text-xs font-bold uppercase tracking-widest text-text-primary mb-3"
-        >
-          Open Source
-        </h4>
-        <p class="text-xs text-text-muted leading-relaxed font-mono">
-          Fully transparent and community-driven. Designed for privacy and
-          efficiency in the P2P ecosystem.
+          {{ feature.description }}
         </p>
       </div>
     </div>
@@ -156,6 +132,13 @@ interface TorrentWithStats {
   };
 }
 
+interface HomepageContent {
+  heroTitle: string;
+  heroSubtitle: string;
+  statusBadgeText: string;
+  features: { title: string; description: string }[];
+}
+
 const search = ref('');
 const router = useRouter();
 
@@ -166,6 +149,28 @@ function handleSearch() {
     query: { q: search.value.trim() },
   });
 }
+
+// Fetch homepage content
+const { data: content } = await useFetch<HomepageContent>('/api/homepage-content');
+
+// Compute hero title parts (split at middle if single word, or at first space)
+const heroTitleParts = computed(() => {
+  const title = content.value?.heroTitle ?? 'OpenTracker';
+  const midpoint = Math.ceil(title.length / 2);
+  return {
+    first: title.slice(0, midpoint),
+    second: title.slice(midpoint),
+  };
+});
+
+// Features with defaults
+const features = computed(() => {
+  return content.value?.features ?? [
+    { title: 'High Performance', description: 'Built with Node.js and Redis for sub-millisecond response times and high concurrency support.' },
+    { title: 'Multi-Protocol', description: 'Supports HTTP, UDP, and WebSocket protocols for maximum compatibility with all BitTorrent clients.' },
+    { title: 'Open Source', description: 'Fully transparent and community-driven. Designed for privacy and efficiency in the P2P ecosystem.' },
+  ];
+});
 
 // Fetch tracker stats for the hero section
 const { data: stats } = await useFetch<TrackerStats>('/api/admin/stats');

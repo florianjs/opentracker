@@ -39,12 +39,76 @@ export default defineEventHandler(async (event) => {
     await setSetting(SETTINGS_KEYS.SITE_LOGO, body.siteLogo);
   }
 
+  if (body.siteLogoImage !== undefined) {
+    if (body.siteLogoImage === null || body.siteLogoImage === '') {
+      await setSetting(SETTINGS_KEYS.SITE_LOGO_IMAGE, '');
+    } else {
+      await setSetting(SETTINGS_KEYS.SITE_LOGO_IMAGE, body.siteLogoImage);
+    }
+  }
+
+  if (body.siteSubtitle !== undefined) {
+    if (body.siteSubtitle === null || body.siteSubtitle === '') {
+      await setSetting(SETTINGS_KEYS.SITE_SUBTITLE, '');
+    } else {
+      await setSetting(SETTINGS_KEYS.SITE_SUBTITLE, body.siteSubtitle);
+    }
+  }
+
+  if (typeof body.announcementEnabled === 'boolean') {
+    await setSetting(
+      SETTINGS_KEYS.ANNOUNCEMENT_ENABLED,
+      body.announcementEnabled ? 'true' : 'false'
+    );
+  }
+
+  if (typeof body.announcementMessage === 'string') {
+    await setSetting(SETTINGS_KEYS.ANNOUNCEMENT_MESSAGE, body.announcementMessage);
+  }
+
+  if (typeof body.announcementType === 'string') {
+    await setSetting(SETTINGS_KEYS.ANNOUNCEMENT_TYPE, body.announcementType);
+  }
+
+  // Homepage content
+  if (typeof body.heroTitle === 'string') {
+    await setSetting(SETTINGS_KEYS.HERO_TITLE, body.heroTitle);
+  }
+
+  if (typeof body.heroSubtitle === 'string') {
+    await setSetting(SETTINGS_KEYS.HERO_SUBTITLE, body.heroSubtitle);
+  }
+
+  if (typeof body.statusBadgeText === 'string') {
+    await setSetting(SETTINGS_KEYS.STATUS_BADGE_TEXT, body.statusBadgeText);
+  }
+
+  if (typeof body.feature1Title === 'string') {
+    await setSetting(SETTINGS_KEYS.FEATURE_1_TITLE, body.feature1Title);
+  }
+
+  if (typeof body.feature1Desc === 'string') {
+    await setSetting(SETTINGS_KEYS.FEATURE_1_DESC, body.feature1Desc);
+  }
+
+  if (typeof body.feature2Title === 'string') {
+    await setSetting(SETTINGS_KEYS.FEATURE_2_TITLE, body.feature2Title);
+  }
+
+  if (typeof body.feature2Desc === 'string') {
+    await setSetting(SETTINGS_KEYS.FEATURE_2_DESC, body.feature2Desc);
+  }
+
+  if (typeof body.feature3Title === 'string') {
+    await setSetting(SETTINGS_KEYS.FEATURE_3_TITLE, body.feature3Title);
+  }
+
+  if (typeof body.feature3Desc === 'string') {
+    await setSetting(SETTINGS_KEYS.FEATURE_3_DESC, body.feature3Desc);
+  }
+
   return {
     success: true,
-    registrationOpen: body.registrationOpen,
-    minRatio: body.minRatio,
-    starterUpload: body.starterUpload,
-    siteName: body.siteName,
-    siteLogo: body.siteLogo,
+    ...body,
   };
 });

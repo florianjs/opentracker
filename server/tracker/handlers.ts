@@ -51,9 +51,29 @@ export async function handleAnnounce(params: {
   event?: 'started' | 'stopped' | 'completed' | 'update' | null;
   passkey?: string;
 }): Promise<void> {
+  // Debug: Log raw input before conversion
+  console.log('[Tracker] handleAnnounce RAW INPUT:', {
+    infoHashType: typeof params.infoHash,
+    infoHashIsBuffer: Buffer.isBuffer(params.infoHash),
+    infoHashLength: params.infoHash?.length,
+    peerIdType: typeof params.peerId,
+    peerIdIsBuffer: Buffer.isBuffer(params.peerId),
+    event: params.event,
+    ip: params.ip,
+    port: params.port,
+  });
+
   const infoHash = bufferToHex(params.infoHash);
   const peerId = bufferToHex(params.peerId);
   const event = params.event || 'update';
+
+  // Debug: Log after conversion
+  console.log('[Tracker] handleAnnounce AFTER CONVERSION:', {
+    infoHash: infoHash?.slice(0, 16) + '...',
+    infoHashLength: infoHash?.length,
+    peerId: peerId?.slice(0, 16) + '...',
+    peerIdLength: peerId?.length,
+  });
 
   // Validate required fields
   if (!infoHash || infoHash.length !== 40) {

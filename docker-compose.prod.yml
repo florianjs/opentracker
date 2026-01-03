@@ -78,6 +78,8 @@ services:
       TRACKER_WS_URL: ${TRACKER_WS_URL:-ws://localhost:8082}
       # Security: Secret for hashing peer IPs
       IP_HASH_SECRET: ${IP_HASH_SECRET}
+      # Debug mode for verbose tracker logging
+      TRACKER_DEBUG: ${TRACKER_DEBUG:-false}
     expose:
       - "3000"
       - "8080"

@@ -13,6 +13,21 @@ export const SETTINGS_KEYS = {
   DEFAULT_INVITES: 'default_invites',
   SITE_NAME: 'site_name',
   SITE_LOGO: 'site_logo',
+  SITE_LOGO_IMAGE: 'site_logo_image',
+  SITE_SUBTITLE: 'site_subtitle',
+  ANNOUNCEMENT_ENABLED: 'announcement_enabled',
+  ANNOUNCEMENT_MESSAGE: 'announcement_message',
+  ANNOUNCEMENT_TYPE: 'announcement_type',
+  // Homepage content
+  HERO_TITLE: 'hero_title',
+  HERO_SUBTITLE: 'hero_subtitle',
+  STATUS_BADGE_TEXT: 'status_badge_text',
+  FEATURE_1_TITLE: 'feature_1_title',
+  FEATURE_1_DESC: 'feature_1_desc',
+  FEATURE_2_TITLE: 'feature_2_title',
+  FEATURE_2_DESC: 'feature_2_desc',
+  FEATURE_3_TITLE: 'feature_3_title',
+  FEATURE_3_DESC: 'feature_3_desc',
 } as const;
 
 const settingsCache = new Map<
@@ -143,4 +158,121 @@ export async function getSiteName(): Promise<string> {
 export async function getSiteLogo(): Promise<string> {
   const value = await getSetting(SETTINGS_KEYS.SITE_LOGO);
   return value || 'ph:broadcast-bold';
+}
+
+/**
+ * Get site logo image URL (custom uploaded image)
+ */
+export async function getSiteLogoImage(): Promise<string | null> {
+  const value = await getSetting(SETTINGS_KEYS.SITE_LOGO_IMAGE);
+  return value || null;
+}
+
+/**
+ * Get site subtitle (displayed below site name)
+ */
+export async function getSiteSubtitle(): Promise<string | null> {
+  const value = await getSetting(SETTINGS_KEYS.SITE_SUBTITLE);
+  return value || null;
+}
+
+/**
+ * Check if announcement is enabled
+ */
+export async function isAnnouncementEnabled(): Promise<boolean> {
+  const value = await getSetting(SETTINGS_KEYS.ANNOUNCEMENT_ENABLED);
+  return value === 'true';
+}
+
+/**
+ * Get announcement message
+ */
+export async function getAnnouncementMessage(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.ANNOUNCEMENT_MESSAGE);
+  return value || '';
+}
+
+/**
+ * Get announcement type (info, warning, error)
+ */
+export async function getAnnouncementType(): Promise<'info' | 'warning' | 'error'> {
+  const value = await getSetting(SETTINGS_KEYS.ANNOUNCEMENT_TYPE);
+  if (value === 'warning' || value === 'error') return value;
+  return 'info';
+}
+
+// ============================================================================
+// Homepage Content
+// ============================================================================
+
+/**
+ * Get hero title
+ */
+export async function getHeroTitle(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.HERO_TITLE);
+  return value || 'OpenTracker';
+}
+
+/**
+ * Get hero subtitle
+ */
+export async function getHeroSubtitle(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.HERO_SUBTITLE);
+  return value || 'High-performance, minimalist P2P tracking engine. Search through our indexed database of verified torrents.';
+}
+
+/**
+ * Get status badge text
+ */
+export async function getStatusBadgeText(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.STATUS_BADGE_TEXT);
+  return value || 'Tracker Online & Operational';
+}
+
+/**
+ * Get feature 1 title
+ */
+export async function getFeature1Title(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.FEATURE_1_TITLE);
+  return value || 'High Performance';
+}
+
+/**
+ * Get feature 1 description
+ */
+export async function getFeature1Desc(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.FEATURE_1_DESC);
+  return value || 'Built with Node.js and Redis for sub-millisecond response times and high concurrency support.';
+}
+
+/**
+ * Get feature 2 title
+ */
+export async function getFeature2Title(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.FEATURE_2_TITLE);
+  return value || 'Multi-Protocol';
+}
+
+/**
+ * Get feature 2 description
+ */
+export async function getFeature2Desc(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.FEATURE_2_DESC);
+  return value || 'Supports HTTP, UDP, and WebSocket protocols for maximum compatibility with all BitTorrent clients.';
+}
+
+/**
+ * Get feature 3 title
+ */
+export async function getFeature3Title(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.FEATURE_3_TITLE);
+  return value || 'Open Source';
+}
+
+/**
+ * Get feature 3 description
+ */
+export async function getFeature3Desc(): Promise<string> {
+  const value = await getSetting(SETTINGS_KEYS.FEATURE_3_DESC);
+  return value || 'Fully transparent and community-driven. Designed for privacy and efficiency in the P2P ecosystem.';
 }

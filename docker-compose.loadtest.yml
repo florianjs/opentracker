@@ -25,6 +25,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       IP_HASH_SECRET: ${IP_HASH_SECRET:-loadtest-ip-hash-secret}
+      TRACKER_DEBUG: ${TRACKER_DEBUG:-false}
     ports:
       - "3000:3000"   # Nuxt app
       - "8080:8080"   # Tracker HTTP (for load testing)
